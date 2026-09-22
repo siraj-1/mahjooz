@@ -1,0 +1,463 @@
+MAHJOOZ APP — FULL IDEA
+
+Mahjooz is a marketplace + booking platform for coworking spaces, study spaces, meeting rooms, desks, private offices, and similar venues, starting in Aleppo.
+
+The main problem it solves is that today a customer usually has to search Instagram or Google, message or call the venue, ask about prices, ask whether there is an available seat or room, and wait for confirmation.
+
+Mahjooz should make that whole process happen inside one app.
+
+CORE CUSTOMER FLOW
+
+Open Mahjooz
+→ Discover nearby spaces
+→ See real availability
+→ Choose a date/time
+→ Reserve
+→ Pay the required deposit
+→ Receive confirmation
+
+The platform has three main sides:
+
+1. Customer
+Uses the mobile app to discover and book spaces.
+
+2. Venue
+Uses a dashboard to manage branches, resources, prices, availability, walk-ins, phone bookings, check-ins, cancellations, and no-shows.
+
+3. Mahjooz Admin
+Manages venue approvals, commissions, users, bookings, and platform operations.
+
+The hardest technical problem is not CRUD. The core challenge is the booking and availability engine.
+
+CUSTOMER EXPERIENCE
+
+A customer should be able to:
+
+- Browse venues
+- Search by area
+- Filter by type
+- Filter by price
+- Filter by amenities
+- Filter by rating
+- Filter by availability
+- View venue photos
+- View descriptions
+- View branches
+- View amenities
+- View working hours
+- View resources
+- View prices
+- View reviews
+- See live availability
+- Choose date
+- Choose time
+- Choose duration
+- Create a booking
+- Pay a deposit
+- View bookings
+- Cancel bookings when allowed
+- Leave a review after completing a booking
+
+Typical booking flow:
+
+Open Mahjooz
+→ Choose venue
+→ Choose branch
+→ Choose resource
+→ Choose date
+→ Choose time/duration
+→ Check availability
+→ Create temporary booking
+→ Pay deposit
+→ Booking confirmed
+
+WHAT CAN BE BOOKED
+
+Mahjooz should support different resource models.
+
+1. POOLED RESOURCE
+
+Example:
+
+Coworking Hall
+Capacity = 30
+
+The user books a seat, not a specific chair.
+
+2. SPECIFIC RESOURCE
+
+Examples:
+
+Meeting Room A
+Desk A12
+Private Office 3
+
+The customer books that exact resource.
+
+This distinction is important because the booking logic is different.
+
+A pooled resource uses capacity.
+
+A specific resource usually behaves like capacity = 1 for the selected time window.
+
+VENUE SIDE
+
+Each venue can have multiple branches.
+
+Example:
+
+Venue
+WorkHub
+
+Branches:
+- University Branch
+- Mogambo Branch
+- New Aleppo Branch
+
+Each branch can contain its own resources.
+
+Example:
+
+University Branch
+
+- Open Workspace
+- Meeting Room A
+- Meeting Room B
+- Private Office 1
+- Study Room
+
+Venue staff should be able to manage:
+
+- Branches
+- Resources
+- Photos
+- Amenities
+- Opening hours
+- Special closure dates
+- Pricing
+- Deposits
+- Blocked times
+- Bookings
+- Customer check-ins
+- No-shows
+- Cancellations
+- Manual bookings
+- Walk-ins
+- Phone bookings
+- Basic statistics
+
+MOST IMPORTANT ARCHITECTURE RULE
+
+Every reservation must go through one booking engine.
+
+Flutter Booking
+Phone Booking
+Walk-In Booking
+Venue Dashboard Booking
+
+→ One Booking Engine
+→ PostgreSQL
+
+Nobody should bypass the booking engine and directly create reservations.
+
+This makes Mahjooz the single source of truth for availability.
+
+WHY THIS MATTERS
+
+Without one booking engine:
+
+Customer books last room
++
+Receptionist books same room by phone
+=
+Double booking
+
+The system must prevent that.
+
+AVAILABILITY ENGINE
+
+The availability engine is the heart of Mahjooz.
+
+When someone asks:
+
+“Is Meeting Room A available tomorrow from 2 PM to 4 PM?”
+
+The backend should check:
+
+- Is the branch open?
+- Is there a special closing date?
+- Is there a schedule exception?
+- Is the resource active?
+- Is the resource blocked?
+- Are there overlapping bookings?
+- Are there temporary payment holds?
+- Is there enough remaining capacity?
+- Is the requested duration allowed?
+
+Only then should it return:
+
+Available
+
+The final availability check should happen inside a database transaction so two users cannot reserve the same last resource at the same time.
+
+BOOKING LIFECYCLE
+
+Recommended lifecycle:
+
+PendingPayment
+→ Confirmed
+→ CheckedIn
+→ Completed
+
+Alternative states:
+
+- Cancelled
+- Expired
+- NoShow
+
+TEMPORARY BOOKING HOLD
+
+If a deposit is required:
+
+Booking created
+→ PendingPayment
+→ 15–20 minute hold
+
+If payment succeeds:
+
+Confirmed
+
+If payment does not happen:
+
+Expired
+
+Then the resource becomes available again.
+
+PRICING
+
+A resource should have pricing rules.
+
+Examples:
+
+Hot Desk
+1 hour = 20,000 SYP
+
+Meeting Room
+1 hour = 50,000 SYP
+2 hours = 90,000 SYP
+
+Private Office
+Full day = 300,000 SYP
+
+Later Mahjooz can support:
+
+- Hourly pricing
+- Daily pricing
+- Fixed-duration pricing
+- Weekday/weekend pricing
+- Peak-hour pricing
+
+For MVP, pricing can remain simpler.
+
+IMPORTANT PRICING RULE
+
+Once the customer books, Mahjooz should save a snapshot of the booking price.
+
+If the venue changes its price tomorrow, the old booking must still remember the original amount.
+
+Store things such as:
+
+- Total price
+- Base price
+- Duration
+- Deposit
+- Discount
+- Currency
+- Pricing rule used
+- Commission
+
+PAYMENTS
+
+For the MVP, Mahjooz can support:
+
+- Mock Payment
+- Manual / Offline Payment
+
+Later it can support:
+
+- Local payment gateway
+- Mobile wallet
+- Bank gateway
+
+The booking engine should not depend directly on one payment company.
+
+Use a payment abstraction such as:
+
+IPaymentProvider
+
+Possible implementations:
+
+- MockPaymentProvider
+- ManualPaymentProvider
+- Future local gateway provider
+- Future mobile wallet provider
+
+This makes payment providers replaceable without rewriting the booking engine.
+
+COMMISSION
+
+Mahjooz can make money through commission on marketplace-generated bookings.
+
+Example:
+
+Booking value:
+200,000 SYP
+
+Mahjooz commission:
+10%
+
+Mahjooz earns:
+20,000 SYP
+
+Commission should be configurable:
+
+- Global commission rule
+- Venue-specific commission override
+
+The commission used for a confirmed booking should be saved permanently with the booking.
+
+Future commission changes should not modify historical bookings.
+
+REVIEWS
+
+A customer should only be able to review a venue after completing a real booking.
+
+Completed Booking
+→ Customer can review
+
+This helps reduce fake reviews.
+
+WAITLIST
+
+If a room or resource is full, a user can join a waitlist.
+
+Example:
+
+Cancellation
+→ Availability opens
+→ Waitlist processed
+→ Customer notified
+
+For MVP, notifying customers is easier than automatically booking the next person.
+
+NOTIFICATIONS
+
+Mahjooz can send notifications for:
+
+- Booking confirmed
+- Payment required
+- Upcoming booking
+- Cancellation
+- Waitlist opening
+- Booking expired
+- Review reminder
+
+Notifications should run in the background so a temporary SMS or push failure does not cause the booking itself to fail.
+
+AUTHENTICATION
+
+For customers:
+
+Phone Number
+→ OTP
+→ Access Token + Refresh Token
+
+Venue staff and admins may also support:
+
+- Phone + OTP
+- Email + Password
+
+Possible roles:
+
+- Customer
+- VenueOwner
+- VenueManager
+- VenueStaff
+- Admin
+- SuperAdmin
+
+Venue staff permissions should be scoped to their venue.
+
+TECHNICAL ARCHITECTURE
+
+Current direction:
+
+Customer App
+Flutter
+→ HTTP / JSON
+ASP.NET Core Backend
+Modular Monolith
+→ PostgreSQL
+
+Supporting technologies:
+
+EF Core
+- Database ORM and migrations
+
+PostgreSQL
+- Main database
+
+Redis
+- Optional caching for performance
+
+S3-compatible storage
+- Venue and resource photos
+
+BackgroundService
+- Booking expiration and background tasks
+
+React + TypeScript
+- Likely venue and admin dashboard
+
+xUnit + Testcontainers
+- Backend testing
+
+GitHub Actions
+- CI/CD
+
+MODULAR MONOLITH MODULES
+
+Suggested backend modules:
+
+- Identity
+- Catalog
+- Availability & Booking
+- Payments
+- Commission
+- Reviews
+- Notifications
+- Admin
+
+This gives clean separation without the complexity of microservices.
+
+OVERALL PRODUCT SUMMARY
+
+Mahjooz is a real-time marketplace and booking platform for coworking, study, meeting, and workspace venues.
+
+Customers use a Flutter app to discover spaces, see real availability, reserve a seat, desk, room, or office, pay a deposit, and manage bookings.
+
+Venues use a web dashboard to manage branches, resources, schedules, prices, manual bookings, walk-ins, check-ins, cancellations, and availability.
+
+Mahjooz sits in the middle as the single source of truth for availability and can earn commission on marketplace bookings.
+
+The core technical system is a race-safe ASP.NET Core booking engine backed by PostgreSQL, designed so every booking channel goes through the same rules and cannot double-book resources.
+
+KEY MINDSET
+
+Mahjooz is NOT mainly:
+
+“A list of coworking spaces.”
+
+Mahjooz is:
+
+“A real-time booking and availability engine with a marketplace built around it.”
