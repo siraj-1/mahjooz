@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../shared/models/venue.dart';
+import '../../amenities.dart';
 
 class VenueCard extends StatelessWidget {
   const VenueCard({super.key, required this.venue, this.onTap});
@@ -18,7 +19,12 @@ class VenueCard extends StatelessWidget {
         subtitle: Text(
           [
             venue.city,
-            '${venue.branches.length} branch${venue.branches.length == 1 ? '' : 'es'}',
+            if (venue.branches.isNotEmpty)
+              '${venue.branches.length} branch${venue.branches.length == 1 ? '' : 'es'}',
+            if (venue.amenities.isEmpty)
+              'Amenities not confirmed'
+            else
+              venue.amenities.map(amenityLabel).join(', '),
           ].whereType<String>().join(' · '),
         ),
         trailing: const Icon(Icons.chevron_right),

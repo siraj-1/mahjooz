@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../shared/mock/mock_venues.dart';
 import '../../../shared/models/venue.dart';
+import '../../discover/amenities.dart';
 
 class VenueDetailScreen extends StatelessWidget {
   const VenueDetailScreen({super.key, required this.venueId});
@@ -23,6 +24,12 @@ class VenueDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           if (venue.description != null) Text(venue.description!),
+          const SizedBox(height: 12),
+          Text(
+            venue.amenities.isEmpty
+                ? 'Amenities have not been confirmed for this sample venue.'
+                : 'Amenities: ${venue.amenities.map(amenityLabel).join(', ')}',
+          ),
           const SizedBox(height: 16),
           for (final branch in venue.branches) _BranchSection(branch: branch),
         ],

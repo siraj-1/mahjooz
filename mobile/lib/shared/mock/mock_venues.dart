@@ -1,8 +1,8 @@
 import '../models/venue.dart';
 
-/// Placeholder data for UI development, taken from the original product
-/// idea doc's own example (WorkHub) so screens render something real
-/// before the backend exists.
+/// UI-only samples. WorkHub is the original product example and has no
+/// confirmed amenities. The clearly named demo cafés have invented amenities
+/// solely to demonstrate filtering; none of these are live listings.
 final List<Venue> mockVenues = [
   Venue(
     id: 'venue-workhub',
@@ -65,5 +65,29 @@ final List<Venue> mockVenues = [
         city: 'Aleppo',
       ),
     ],
+  ),
+  const Venue(
+    id: 'demo-cafe-cedar',
+    name: 'Demo Cedar Café',
+    description: 'Sample café for previewing the venue filters. Not a live listing.',
+    city: 'Aleppo',
+    country: 'Syria',
+    amenities: ['wifi', 'coffee'],
+  ),
+  const Venue(
+    id: 'demo-cafe-mosaic',
+    name: 'Demo Mosaic Café',
+    description: 'Sample café for previewing the venue filters. Not a live listing.',
+    city: 'Aleppo',
+    country: 'Syria',
+    amenities: ['wifi', 'parking', 'tv'],
+  ),
+  const Venue(
+    id: 'demo-cafe-lantern',
+    name: 'Demo Lantern Café',
+    description: 'Sample café for previewing the venue filters. Not a live listing.',
+    city: 'Aleppo',
+    country: 'Syria',
+    amenities: ['coffee', 'tv', 'starlink'],
   ),
 ];

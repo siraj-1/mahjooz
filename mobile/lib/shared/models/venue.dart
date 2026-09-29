@@ -51,6 +51,7 @@ class Venue {
     this.city,
     this.country,
     this.contactPhone,
+    this.amenities = const [],
     this.branches = const [],
   });
 
@@ -61,5 +62,7 @@ class Venue {
   final String? city;
   final String? country;
   final String? contactPhone;
+  /// Confirmed amenity codes. An empty list means no amenities are confirmed.
+  final List<String> amenities;
   final List<Branch> branches;
 }
