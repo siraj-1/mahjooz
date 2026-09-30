@@ -15,20 +15,34 @@ class MahjoozBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: (index) {
-        if (index == currentIndex) return;
-        context.go(_routes[index]);
-      },
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Discover'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.event_note),
-          label: 'Bookings',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: Color(0xFFE9ECE8))),
+      ),
+      child: BottomNavigationBar(
+        currentIndex: currentIndex,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color(0xFF187E58),
+        unselectedItemColor: const Color(0xFF808981),
+        selectedFontSize: 11,
+        unselectedFontSize: 11,
+        onTap: (index) {
+          if (index == currentIndex) return;
+          context.go(_routes[index]);
+        },
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.explore_outlined), label: 'الرئيسية'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event_note_outlined),
+            label: 'حجوزاتي',
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline), label: 'حسابي'),
+        ],
+      ),
     );
   }
 }

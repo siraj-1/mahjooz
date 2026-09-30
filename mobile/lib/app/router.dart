@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,12 +8,16 @@ import '../features/auth/presentation/otp_verify_screen.dart';
 import '../features/discover/presentation/discover_screen.dart';
 import '../features/venue/presentation/venue_detail_screen.dart';
 import '../features/booking/presentation/booking_flow_screen.dart';
+import '../features/booking/presentation/select_resource_screen.dart';
 import '../features/booking/presentation/my_bookings_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/',
+    // This browser preview has no real Identity service; open the actual
+    // discovery UI instead of requiring a pretend SMS verification step.
+    initialLocation:
+        kIsWeb ? (Uri.base.path == '/' ? '/home' : Uri.base.path) : '/',
     routes: [
       GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
       GoRoute(
@@ -36,6 +41,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           final venueId = state.pathParameters['venueId']!;
           return VenueDetailScreen(venueId: venueId);
         },
+      ),
+      GoRoute(
+        path: '/venue/:venueId/select/:category',
+        builder: (context, state) => SelectResourceScreen(
+          venueId: state.pathParameters['venueId']!,
+          category: state.pathParameters['category']!,
+        ),
       ),
       GoRoute(
         path: '/venue/:venueId/book/:resourceId',

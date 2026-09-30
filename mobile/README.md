@@ -1,38 +1,18 @@
-# Mahjooz — Customer App (Flutter)
+# Mahjooz Flutter customer app
 
-Customer-facing mobile app: discover coworking/study spaces, see live availability, book a seat/desk/room, manage bookings.
+The app shows illustrative demo venues and lets you check one-hour desk/office slots, reserve a demo slot, view bookings stored for this device, and cancel a future booking. It uses the ASP.NET Core API in `../backend` (setup in the [project README](../README.md)). There are no real venue listings, payments, or accounts.
 
-This is a **UI skeleton** — navigation, screens, and models are wired up against mock data. No network calls hit a real backend yet; that comes once the Availability & Booking Engine (NestJS + Prisma + PostgreSQL, per the plan) exists.
+## Local setup
 
-## One-time setup (do this first)
+Install Flutter (Dart SDK >= 3.3). If platform folders such as `android/` or `ios/` are missing, run `flutter create . --org com.mahjooz --project-name mahjooz` inside `mobile/` first; this adds platform runners without replacing `lib/`. Then:
 
-This skeleton was hand-written (`lib/`, `pubspec.yaml`, ...) without running the Flutter CLI, so the native platform folders (`android/`, `ios/`, `web/`, ...) don't exist yet. Generate them locally:
-
-```bash
+```sh
 cd mobile
-flutter create . --org com.mahjooz --project-name mahjooz
 flutter pub get
-flutter run
+flutter test
+flutter run --dart-define=MAHJOOZ_API_URL=http://<device-reachable-host>:<api-port>/api/v1/demo
 ```
 
-`flutter create .` fills in the platform folders around the existing `lib/` and `pubspec.yaml` without overwriting them. Commit the generated `android/`, `ios/`, etc. folders normally afterward — they aren't gitignored.
+For an Android emulator, the host machine is typically `10.0.2.2`, not `localhost`. On a physical device, use an address reachable over its network. Use HTTPS outside local development. Booking operations do not work with an empty `MAHJOOZ_API_URL`.
 
-## Structure
-
-- `lib/app/` — app shell: theme, go_router config, root widget, shared bottom-nav widget
-- `lib/core/` — cross-cutting: Dio client (placeholder base URL + auth header interceptor), secure token storage
-- `lib/features/<feature>/presentation/` — one folder per screen area: splash, auth, discover, venue, booking, profile
-- `lib/shared/models/` — Venue/Branch/Resource, mirroring the field names already used in `lib/db/src/schema/` in this repo, so wiring the real API later is a rename, not a redesign
-- `lib/shared/mock/` — placeholder data (a "WorkHub" venue with the branches/resources from the original idea doc) so screens render something real before the backend exists
-
-## Screens included (skeleton only — no real logic yet)
-
-Splash → Phone entry → OTP verify → Discover (venue list, tab) → Venue detail → Booking flow (placeholder date/time picker, reserve button disabled) → My Bookings (tab), Profile (tab, has logout).
-
-Bottom nav is a plain three-tab `BottomNavigationBar` repeated per tab-root screen, not a `StatefulShellRoute` — simpler to read while go_router basics are still new. Worth upgrading later once that's comfortable.
-
-## Next steps
-
-1. Run the setup above, confirm `flutter run` shows Discover with the WorkHub mock venue.
-2. Once Identity/Catalog are real on the backend, replace `core/network/dio_client.dart`'s placeholder `kApiBaseUrl` and wire real login + venue fetching.
-3. Leave the booking flow screen disabled until the Availability & Booking Engine (the concurrency-safe core) actually exists — don't fake "available" slots even for a demo.
+Flutter web uses `/booking-demo` for booking requests and therefore needs the same-origin proxy supplied by the Replit preview; `flutter run -d chrome` alone will not proxy the API. Demo booking references are saved on the current device only.

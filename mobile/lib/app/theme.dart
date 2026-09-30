@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 
 final ThemeData mahjoozTheme = ThemeData(
   useMaterial3: true,
-  colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1F6F54)),
-  appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+  fontFamily: 'Alexandria',
+  scaffoldBackgroundColor: Colors.white,
+  colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF187E58)),
+  appBarTheme: const AppBarTheme(
+    centerTitle: false,
+    elevation: 0,
+    backgroundColor: Colors.white,
+    foregroundColor: Color(0xFF173C2A),
+  ),
 );
