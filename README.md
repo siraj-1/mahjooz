@@ -6,7 +6,7 @@ Venues shown in the app are illustrative, not verified real listings. Reservatio
 
 ## Run the API
 
-Install .NET SDK 8 and PostgreSQL. Create a development database, then apply `backend/sql/001_mahjooz_foundation.sql`, `002_demo_bookings.sql`, and `003_demo_booking_cancellations.sql` **in that order** with `psql -v ON_ERROR_STOP=1 -f <file>`.
+Install .NET SDK 10 and PostgreSQL. Create a development database, then apply `backend/sql/001_mahjooz_foundation.sql`, `002_demo_bookings.sql`, and `003_demo_booking_cancellations.sql` **in that order** with `psql -v ON_ERROR_STOP=1 -f <file>`.
 
 Provide a PostgreSQL connection through `DATABASE_URL`, the `PGHOST`/`PGPORT`/`PGDATABASE`/`PGUSER`/`PGPASSWORD` variables, or ASP.NET Core `ConnectionStrings:Mahjooz`. Keep credentials out of Git. Then run:
 
